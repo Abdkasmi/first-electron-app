@@ -1,4 +1,5 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
+const path = require("path");
 
 // Hot reload implementation
 const electronReload = require('electron-reload');
@@ -14,18 +15,18 @@ if (module.hot) {
 const createWindow = () => {
     const win = new BrowserWindow({
         width: 800,
-        height: 600
+        height: 600,
+        webPreferences: {
+            preload: path.join(__dirname, "preload.js")
+        }
     })
 
     win.loadFile('templates/index.html');
 }
 
 app.whenReady().then(() => {
+    ipcMain.handle('ping', () => 'pong')
     createWindow();
-
-    app.whenReady().then(() => {
-        createWindow()
-    })
 })
 
 app.on('window-all-closed', () => {
